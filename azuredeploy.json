@@ -17,7 +17,7 @@
             "type": "string"
         },
         "VmAdminPassword": {
-            "type": "secureString"
+            "type": "securestring"
         },
         "sharedKey": {
             "type": "securestring",
@@ -67,7 +67,7 @@
         }
     },
     "variables": {
-        "artifactsLocation": "https://raw.githubusercontent.com/dmauser/Lab/master/PLS-for-onprem-workloads-haproxy/linked/",
+        "artifactsLocation": "https://raw.githubusercontent.com/shriazure/PLS-for-onprem-workloads-haproxy/main/linked/",
         "Azure": {
             "name": "[concat(parameters('Environment'),'-Az-vnet')]",
             "addressSpacePrefix": "10.0.0.0/24",
@@ -79,6 +79,19 @@
             "gatewaySubnetPrefix": "10.0.0.96/27",
             "gatewayPublicIPName1": "[concat(parameters('Environment'),'-Az-GW-pip1')]",
             "connectionName": "Az-to-OnPrem",
+            "asn": 65001
+        },
+        "AzureSpoke": {
+            "name": "[concat(parameters('Environment'),'-Spoke-Az-vnet')]",
+            "addressSpacePrefix": "172.16.0.0/24",
+            "subnetName": "subnet1",
+            "subnetPrefix": "172.16.0.0/27",
+            "trustedPrefix": "172.16.0.32/27",
+            "untrustedPrefix": "172.16.0.64/27",
+            "gatewayName": "[concat(parameters('Environment'),'-Spoke-Az-GW')]",
+            "gatewaySubnetPrefix": "172.16.0.96/27",
+            "gatewayPublicIPName1": "[concat(parameters('Environment'),'-Spoke-Az-GW-pip1')]",
+            "connectionName": "AzSpoke-to-OnPrem",
             "asn": 65001
         },
         "nsgname": "[concat(parameters('Environment'),'-default-nsg')]",
@@ -362,6 +375,53 @@
             }
         },
         {
+            "condition": "[equals(parameters('Environment'),'Provider')]",
+            "apiVersion": "2020-05-01",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('AzureSpoke').name]",
+            "location": "[parameters('location')]",
+            "comments": "This is the spoke vNet",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', concat(parameters('Environment'),'-nsg'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('AzureSpoke').addressSpacePrefix]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('AzureSpoke').subnetName]",
+                        "properties": {
+                            "addressPrefix": "[variables('AzureSpoke').subnetPrefix]",
+                            "networkSecurityGroup": {
+                                "id": "[reference(resourceId('Microsoft.Resources/deployments', concat(parameters('Environment'),'-nsg')), '2020-05-01').outputs.nsgResourceID.value]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "[variables('AzureSpoke').gatewaySubnetPrefix]"
+                        }
+                    },
+                    {
+                        "name": "trusted",
+                        "properties": {
+                            "addressPrefix": "[variables('AzureSpoke').trustedPrefix]"
+                        }
+                    },
+                    {
+                        "name": "untrusted",
+                        "properties": {
+                            "addressPrefix": "[variables('AzureSpoke').untrustedPrefix]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "apiVersion": "2020-05-01",
             "type": "Microsoft.Network/connections",
             "name": "[variables('OnPrem').connectionName]",
@@ -467,7 +527,6 @@
             }
         },
         {
-
             "condition": "[equals(parameters('Environment'),'Provider')]",
             "name": "pls-haproxy",
             "type": "Microsoft.Resources/deployments",
@@ -475,6 +534,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('Azure').name)]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('OnPrem').name)]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('AzureSpoke').name)]",
                 "[resourceId('Microsoft.Network/virtualNetworkGateways/', variables('Azure').gatewayName)]"
             ],
             "properties": {
