@@ -27,7 +27,7 @@
         },
         "existingVnetName": {
             "type": "string",
-            "defaultValue": "provider-az-vnet",
+            "defaultValue": "provider-spoke-az-vnet",
             "metadata": {
                 "description": "vName of the existing virtual network to deploy the scale set into."
             }
@@ -71,11 +71,11 @@
         }
     },
     "variables": {
-        "addressSpacePrefix": "10.0.0.0/24",
-        "aznetname": "provider-az-vnet",
-        "gatewaySubnetPrefix": "10.0.0.96/27",
+        "addressSpacePrefix": "172.16.0.0/24",
+        "aznetname": "provider-spoke-az-vnet",
+        "gatewaySubnetPrefix": "172.16.0.96/27",
         "haproxysubnetname": "haproxy",
-        "haproxysubnetprefix": "10.0.0.128/27",
+        "haproxysubnetprefix": "172.16.0.128/27",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -95,13 +95,13 @@
         "nsgId": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]",
         "nsgName": "Provider-default-nsg",
         "plsnatsubnetname": "pls-nat-subnet",
-        "plsnatsubnetprefix": "10.0.0.160/28",
+        "plsnatsubnetprefix": "172.16.0.160/28",
         "plssubnetId": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), variables ('plsnatsubnetname'))]",
         "privatelinkservicename": "pls-haproxy",
         "subnetId": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), variables ('haproxysubnetname'))]",
-        "subnetPrefix": "10.0.0.0/27",
-        "trustedPrefix": "10.0.0.32/27",
-        "untrustedPrefix": "10.0.0.64/27"
+        "subnetPrefix": "172.16.0.0/27",
+        "trustedPrefix": "172.16.0.32/27",
+        "untrustedPrefix": "172.16.0.64/27"
     },
     "resources": [
         {
