@@ -16,7 +16,7 @@ This lab is based on the reference architecture: [Using Private Link Service for
 
 ### Architecture diagram
 
-![Private Link for On-premises workloads using HA Proxy](./media/PLS-for-onprem-workloads-haproxy.png)
+![Private Link for On-premises workloads using HA Proxy](./media/PLS-for-onprem-spoke-workloads-haproxy.png)
 
 Below some important details of each environment deployed:
 
