@@ -58,6 +58,9 @@ Deploy three separated environments for Provider, Customer A and Customer B usin
 
     ![Environment](./media/deploy-restrictssh.png)
 
+## Peer Hub VNET and the Spoke VNET via Portal
+
+1. Currently the template doesn't do the peering between the Hub and the Spoke in the Provider environment. Configure this manually via Portal for now. I may add the template at a later time. 
 
 ## LAB Steps
 
