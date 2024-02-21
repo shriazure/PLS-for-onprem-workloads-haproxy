@@ -27,9 +27,9 @@ Below some important details of each environment deployed:
 
 ### Provider Spoke Virtual Network
 1. **VM Scale Set**: pls-ha-proxy using two instances inside haproxy subnet.
-2. **Internal load standard balancer** pls-std-ilb (10.0.0.132).
-3. **Private Link Service**: pls-haproxy using 10.0.0.164 that is from subnet pls-nat-subnet.
-4. **VPN Gateways and connection** between Azure and On-premises environment.
+2. **Internal load standard balancer** pls-std-ilb (172.16.0.132).
+3. **Private Link Service**: pls-haproxy using 172.16.0.164 that is from subnet pls-nat-subnet.
+4. **VNET Peering, VPN Gateways and connection** between Azure Hub and Spoke and On-premises environment.
 
 ### Customer A and B
 
@@ -37,7 +37,7 @@ Below some important details of each environment deployed:
 2. **Virtual Machines**: Cx(A/B)-onprem-lxvm (with IP 192.168.1.4 and running Nginx) and Cx(A/B)-az-lxvm (10.0.0.4).
 3. VPN Gateways and connection between Azure and On-premises environment.
 
-**Note:** All three environments use the same address space which is another benefit of Private Link Service that has built-in SNAT. Also, you can deploy each environment in different regions. As shown in the diagram above where you Provider on US Central, Customer A on East US, and Customer B on West US.
+**Note:** All three environments use the same address space which is another benefit of Private Link Service that has built-in SNAT. Also, you can deploy each environment in different regions. 
 
 ## Deploy this solution
 
